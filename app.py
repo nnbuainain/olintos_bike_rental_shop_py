@@ -1,19 +1,21 @@
-import json
-
+from models.bikes import Bikes
+from models.rent import Rent
 
 
 def menu():
     
-    print('\n###########  WELCOME TO THE BIKE SHOP!   ###########\n')
+    print("\n###########  WELCOME TO OLINTO'S BIKE SHOP!   ###########\n")
     print('\n Please select an option from the menu\n')
-    print("1) Rent a bike")
-    print("2) Return a bike")
+    print("1) Rent bike")
+    print("2) Return bike")
     print("3) See bikes available")
     print("4) Exit")
+
     
 def main() -> bool:
     option = None
-    
+    bikes = Bikes()
+
     while option != 4:
         menu()
         
@@ -22,24 +24,27 @@ def main() -> bool:
         
         except ValueError:
             print('Invalid Option, please type a number available in the menu')
+            
             menu()
         
         else:
             if option == 1:
-                pass
+                rent = Rent() 
+                
+                rent.rent_bike(bikes)
             
             elif option == 2:
-                pass
-            
+                rent.return_bikes(bikes)
+                
             elif option == 3:
-                pass
+                bikes.list_bikes_available()
             
             elif option == 4:
-                pass
+                print('\nExiting the app...')
+                print('See ya later!')
 
             else:
                 print('Invalid Option, please type a number available in the menu')
-
 
 
 if __name__ == '__main__':
