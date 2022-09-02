@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from models.bikes import Bikes
 class Rent:
     discount = 0.7
     
@@ -36,7 +36,7 @@ class Rent:
         return self.__plan
 
     @plan.setter
-    def plan(self, plan):
+    def plan(self, plan: int):
         self.__plan = plan    
 
     @property
@@ -44,7 +44,7 @@ class Rent:
         return self.__price
 
     @price.setter
-    def price(self, price):
+    def price(self, price: float):
         self.__price = price
 
     @property
@@ -52,10 +52,45 @@ class Rent:
         return self.__duration
 
     @duration.setter
-    def duration(self, hours):
+    def duration(self, hours: int):
         self.__duration = hours
 
-    def ask_number_of_bikes(bikes) -> int:
+    
+    def rent_bike(self, bikes: Bikes):
+        number_of_bikes = Rent.ask_number_of_bikes(bikes)
+
+        plan = Rent.ask_plan()
+
+        price = self.plan_dict[plan]['fare'] * number_of_bikes
+
+        if number_of_bikes >= 3:
+            price *= self.discount
+        
+        self.number_of_bikes = number_of_bikes
+        self.plan = plan
+        self.price = price
+        self.time_of_rent = datetime.now()
+        self.duration = self.plan_dict[plan]['rent_duration']
+
+        print('\nYour rent was completed successfully')
+        print('\nCheck out your rent information below')
+        
+        self.display_rent_information()
+        
+        bikes.total_available -= number_of_bikes        
+
+    
+    def return_bikes(self, bikes: Bikes):
+        self.update_duration_and_price()
+        
+        print(f'\nYou are returning {self.number_of_bikes} bikes')
+        print(f'\n The duration of your rent was {self.duration} hour(s)')
+        print(f'\n Your total to be paid is: {self.price}')
+
+        bikes.total_available += self.number_of_bikes
+
+
+    def ask_number_of_bikes(bikes: Bikes) -> int:
         try:
             print('\n###########  Number of bikes   ###########\n')
             print(f"\nWe currently have {bikes.total_available} bikes available\n")
@@ -81,6 +116,7 @@ class Rent:
                 
                 Rent.ask_number_of_bikes(bikes)
 
+
     @staticmethod
     def ask_plan():
         try:
@@ -99,44 +135,17 @@ class Rent:
                 print('\nInvalid option, please select one of the three plan available')
                 Rent.ask_plan()
 
+
+    def update_duration_and_price(self):        
+        if self.duration != 1:
+            self.duration = int((datetime.now()-self.time_of_rent).total_seconds()/3600)
+
+            self.price = self.plan_dict[self.plan]['fare'] * self.number_of_bikes * self.duration
+
+            if self.number_of_bikes >= 3:
+                self.price *= self.discount
     
-    def rent_bike(self, bikes):
-        number_of_bikes = Rent.ask_number_of_bikes(bikes)
 
-        plan = Rent.ask_plan()
-
-        price = self.plan_dict[plan]['fare'] * number_of_bikes
-
-        if number_of_bikes >= 3:
-            price *= self.discount
-        
-        self.number_of_bikes = number_of_bikes
-        self.plan = plan
-        self.price = price
-        self.time_of_rent = datetime.now()
-        self.duration = self.plan_dict[plan]['rent_duration']
-
-        print('\nYour rent was completed successfully')
-        print('\nCheck out your rent information below')
-        
-        self.display_rent_information()
-        
-        bikes.total_available -= number_of_bikes        
-
-    def return_bike(self):
-        print(f'\nYou are returning {self.number_of_bikes} bikes')
-        print(f'\n The duration of your rent was {self.duration} hours')
-        print(f'\n Your total to be paid is: {self.price}')
-
-
-
-    @staticmethod
-    def display_plans():
-        print('\n###########  Plans available   ###########\n')
-        print("1) Hourly rental: $5")
-        print("2) Daily rental: $10")
-        print("3) Weekly rental: $40")
-    
     def display_rent_information(self):
         print('\n###########  Rent Summary   ###########\n')
         print(f"\nYour rent started at: {self.time_of_rent}")
@@ -144,6 +153,7 @@ class Rent:
         print(f"\nRent Plan: {self.plan_dict[self.plan]['description']}")
         print(f"\nTotal to be paid ${self.price}")
         self.get_remaining_rent_time()
+
 
     def get_remaining_rent_time(self):
         t_start = self.time_of_rent
@@ -154,11 +164,31 @@ class Rent:
 
         if time_remaining[0] < 0:
             print(f'Your rent is expired, please return you bike(s) immediately')
+        
         elif time_remaining[0] > 24:
             print(f'Your rent expires in {int(time_remaining[0]/24)} days, {int(time_remaining[0]%24)} hours and {int(time_remaining[1]/60)} minutes')
+        
         else:
             print(f'Your rent expires in {int(time_remaining[0])} hours and {int(time_remaining[1]/60)} minutes')
 
 
+    @staticmethod
+    def display_plans():
+        print('\n###########  Plans available   ###########\n')
+        print("1) Hourly rental: $5")
+        print("2) Daily rental: $10")
+        print("3) Weekly rental: $40")
 
+
+#import json
+
+#from bikes import Bikes
+#bikes = Bikes()
+#rent = Rent()
+#rent.rent_bike(bikes)
+
+
+#jsonStr = json.dumps(rent.__dict__,indent=4, sort_keys=True, default=str)
+#datetime.fromisoformat('2022-09-02 10:43:21.012527')
+#print(jsonStr)
 
