@@ -9,14 +9,15 @@ def menu():
     print("1) Rent bike")
     print("2) Return bike")
     print("3) See bikes available")
-    print("4) Exit")
+    print("4) See your rent summary information")
+    print("5) Exit")
 
     
 def main() -> bool:
     option = None
     bikes = Bikes()
-
-    while option != 4:
+    rent = Rent() 
+    while option != 5:
         menu()
         
         try:
@@ -28,18 +29,19 @@ def main() -> bool:
             menu()
         
         else:
-            if option == 1:
-                rent = Rent() 
-                
+            if option == 1:                
                 rent.rent_bike(bikes)
             
             elif option == 2:
-                rent.return_bikes(bikes)
+                rent = rent.return_bikes(bikes)
                 
             elif option == 3:
                 bikes.list_bikes_available()
             
             elif option == 4:
+                rent.display_rent_information()
+
+            elif option == 5:
                 print('\nExiting the app...')
                 print('See ya later!')
 
